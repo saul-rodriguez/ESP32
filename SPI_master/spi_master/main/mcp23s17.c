@@ -53,7 +53,7 @@ void MCP23S17_writePortB(uint8_t val)
 uint8_t MCP23S17_readPortB(void)
 {
 	uint8_t ret;
-	read_reg(SPI2_address, MCP23017_GPIOB, &ret);
+	read_reg((SPI2_address | 0x01), MCP23017_GPIOB, &ret);  // set read bit
 
 	return ret;
 }

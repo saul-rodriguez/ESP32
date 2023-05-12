@@ -33,6 +33,7 @@ void spi_init(void)
 		ESP_ERROR_CHECK(ret);
 }
 
+/*
 void write_reg(uint8_t add, uint8_t reg, uint8_t value)
 {
 	 uint8_t tx_data[4] = { add, reg, value };
@@ -49,20 +50,46 @@ void write_reg(uint8_t add, uint8_t reg, uint8_t value)
 	 //ESP_LOGI("SPI", "SPI RX %x", t.rx_data[0]);
 
 }
+*/
+
+void write_reg(uint8_t add, uint8_t reg, uint8_t value)
+{
+	 spi_transaction_t t = {
+		//.tx_buffer = tx_data,
+		.length = 3 * 8,
+		.rxlength = 3 * 8,
+		//  .rx_buffer = rx_data,
+		.flags = SPI_TRANS_USE_RXDATA | SPI_TRANS_USE_TXDATA
+	 };
+
+	 t.tx_data[0] = add;
+	 t.tx_data[1] = reg;
+	 t.tx_data[2] = value;
+
+	 ESP_ERROR_CHECK(spi_device_polling_transmit(spi2, &t));
+}
+
 
 void read_reg(uint8_t add, uint8_t reg, uint8_t *value)
 {
-	uint8_t tx_data[4] = { add, reg, 0x00 };
-	tx_data[0] |= 0x01; // Set read bit
+	//uint8_t tx_data[4] = { add, reg, 0x00 };
+	//tx_data[0] |= 0x01; // Set read bit
 
 	spi_transaction_t t = {
-		.tx_buffer = tx_data,
+		//.tx_buffer = tx_data,
 		.length = 3 * 8,
 		.rxlength = 3 * 8,
-		.flags = SPI_TRANS_USE_RXDATA
+		.flags = SPI_TRANS_USE_RXDATA | SPI_TRANS_USE_TXDATA
 	};
 
+	t.tx_data[0] = add; //read bit set
+	t.tx_data[1] = reg;
+	t.tx_data[2] = 0; // dummy data
+
 	ESP_ERROR_CHECK(spi_device_polling_transmit(spi2, &t));
+
+	*value = t.rx_data[2];
+
 	ESP_LOGI("SPI", "SPI RX %x %x %x", t.rx_data[0], t.rx_data[1], t.rx_data[2] );
 
 }
