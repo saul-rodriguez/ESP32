@@ -21,7 +21,7 @@ void SPI_init(void)
 
 		//Configure the device
 		spi_device_interface_config_t devcfg={
-		        .clock_speed_hz = 1000000,  // 1 MHz
+		        .clock_speed_hz = 10000000,  // 1 MHz
 		        .mode = 0,                  //SPI mode 0
 		        .spics_io_num = CS_PIN,
 		        .queue_size = 1,

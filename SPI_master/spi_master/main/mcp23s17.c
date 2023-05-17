@@ -21,7 +21,7 @@ void MCP23S17_setTrisA(uint8_t tris)
     SPI1_ExchangeByte(tris);
     SS_SetHigh();*/
 
-	write_reg(SPI2_address, MCP23017_IODIRA , tris);
+	SPI_write_reg(SPI2_address, MCP23017_IODIRA , tris);
 
 
 }
@@ -35,30 +35,85 @@ void MCP23S17_writePortA(uint8_t val)
     SPI1_ExchangeByte(val);
     SS_SetHigh(); */
 
-	write_reg(SPI2_address, MCP23017_GPIOA, val);
+	SPI_write_reg(SPI2_address, MCP23017_GPIOA, val);
 
 
 }
 
 void MCP23S17_setTrisB(uint8_t tris)
 {
-	write_reg(SPI2_address, MCP23017_IODIRB , tris);
+	SPI_write_reg(SPI2_address, MCP23017_IODIRB , tris);
 }
 
 void MCP23S17_writePortB(uint8_t val)
 {
-	write_reg(SPI2_address, MCP23017_GPIOB, val);
+	SPI_write_reg(SPI2_address, MCP23017_GPIOB, val);
 }
 
 uint8_t MCP23S17_readPortB(void)
 {
 	uint8_t ret;
-	read_reg((SPI2_address | 0x01), MCP23017_GPIOB, &ret);  // set read bit
+	SPI_read_reg((SPI2_address | 0x01), MCP23017_GPIOB, &ret);  // set read bit
 
 	return ret;
 }
 
+void MCP23S17_transaction()
+{
+	uint8_t data[4];
+	uint16_t Size = 3;
 
+	vTaskDelay(100/portTICK_PERIOD_MS);
+
+	// Write PortA 0xff
+	data[0] = SPI2_address;
+	data[1] = MCP23017_GPIOA;
+	data[2] = 0xff;
+
+	SPI_transaction(data, Size);
+	ESP_LOGI("MCP23S17", "MCP23S17 TX1 %x %x %x", data[0], data[1], data[2] );
+
+	vTaskDelay(100/portTICK_PERIOD_MS);
+
+	// Read portB
+	data[0] = SPI2_address | 0x01;
+	data[1] = MCP23017_GPIOB;
+	data[2] = 0x00;
+
+	SPI_transaction(data, Size);
+	ESP_LOGI("MCP23S17", "MCP23S17 RX %x %x %x", data[0], data[1], data[2] );
+
+	// Write PortA 0xff
+	data[0] = SPI2_address;
+	data[1] = MCP23017_GPIOA;
+	data[2] = 0x00;
+
+	SPI_transaction(data, Size);
+	ESP_LOGI("MCP23S17", "MCP23S17 TX0 %x %x %x", data[0], data[1], data[2] );
+}
+
+void MCP23S17_platform_write()
+{
+	uint8_t reg, data[4];
+	//uint16_t Size = 3;
+
+	vTaskDelay(100/portTICK_PERIOD_MS);
+
+	reg = SPI2_address;
+	data[0] = MCP23017_GPIOA;
+	data[1] = 0xff;
+
+	platform_write(0,reg,data,2);
+
+	vTaskDelay(100/portTICK_PERIOD_MS);
+
+	data[0] = MCP23017_GPIOA;
+	data[1] = 0x00;
+
+	platform_write(0,reg,data,2);
+
+
+}
 
 /*
 void writePortA_nowait()

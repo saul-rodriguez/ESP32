@@ -71,7 +71,7 @@ void app_main(void)
 	//uint8_t a;
 	//esp_err_t ret;
 
-	spi_init();
+	SPI_init();
 
 	MCP23S17_setAddress(0x20);
 
@@ -80,13 +80,23 @@ void app_main(void)
 
 	MCP23S17_setTrisB(0xff);
 
-
+/*
 	while(1) {
 		vTaskDelay(100/portTICK_PERIOD_MS);
 		MCP23S17_writePortA(0xff);
 		vTaskDelay(100/portTICK_PERIOD_MS);
 		MCP23S17_writePortA(0x00);
-
-		MCP23S17_readPortB();
+		//MCP23S17_transaction();
+		//MCP23S17_readPortB();
 	}
+*/
+	/*
+	while(1) {
+		MCP23S17_transaction();
+	}
+	*/
+
+	while(1) {
+			MCP23S17_platform_write();
+		}
 }

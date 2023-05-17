@@ -62,6 +62,10 @@ void MCP23S17_setTrisB(uint8_t tris);
 void MCP23S17_writePortB(uint8_t val);
 uint8_t MCP23S17_readPortB(void);
 
+// Test functions
+void MCP23S17_transaction();
+void MCP23S17_platform_write();
+
 //void writePortA_nowait(void);
 
 
