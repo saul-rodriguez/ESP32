@@ -56,8 +56,8 @@ void app_main(void)
       ism330dhcx_xl_data_rate_set(&dev_ctx, ISM330DHCX_XL_ODR_104Hz);
       ism330dhcx_gy_data_rate_set(&dev_ctx, ISM330DHCX_GY_ODR_104Hz);
       /* Set full scale */
-      ism330dhcx_xl_full_scale_set(&dev_ctx, ISM330DHCX_16g);
-      ism330dhcx_gy_full_scale_set(&dev_ctx, ISM330DHCX_125dps);
+      ism330dhcx_xl_full_scale_set(&dev_ctx, ISM330DHCX_2g);
+      ism330dhcx_gy_full_scale_set(&dev_ctx, ISM330DHCX_2000dps);
       /* Configure filtering chain(No aux interface)
        *
        * Accelerometer - LPF1 + LPF2 path
@@ -87,8 +87,9 @@ void app_main(void)
 		 	 	 		 	 		 acceleration_mg[1] = ism330dhcx_from_fs2g_to_mg(data_raw_acceleration[1]);
 		 	 	 		 	 		 acceleration_mg[2] = ism330dhcx_from_fs2g_to_mg(data_raw_acceleration[2]);
 		 	 	 		 	 		 //sprintf((char *)tx_buffer,"Acceleration [mg]:%4.2f\t%4.2f\t%4.2f\r\n", acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
-		 	 	 		 	 		 printf("Accel [mg]:%4.2f\t%4.2f\t%4.2f\r\n", acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
-		 	 	 		 	 		 //tx_com(tx_buffer, strlen((char const *)tx_buffer));
+		 	 	 		 	 		 //printf("Accel [mg]:%4.2f\t%4.2f\t%4.2f\r\n", acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
+		 	 	 		 	 		 printf("Accel z [mg]:%4.2f\n", (acceleration_mg[2]+119));
+
 		 	 	 		 	 	 }
 		 	 	 		 	 	 break;
 		 	 	 	 case 'g':
@@ -102,7 +103,7 @@ void app_main(void)
 		 	 	 				      angular_rate_mdps[1] = ism330dhcx_from_fs2000dps_to_mdps(data_raw_angular_rate[1]);
 		 	 	 				      angular_rate_mdps[2] = ism330dhcx_from_fs2000dps_to_mdps(data_raw_angular_rate[2]);
 		 	 	 				      printf("Angrate [mdps]:%4.2f\t%4.2f\t%4.2f\r\n", angular_rate_mdps[0], angular_rate_mdps[1], angular_rate_mdps[2]);
-		 	 	 				         //tx_com(tx_buffer, strlen((char const *)tx_buffer));
+
 		 	 	 				 }
 		 	 	 				 break;
 
@@ -122,7 +123,7 @@ uint8_t pause()
 	char str[100];
 	memset(str,0,sizeof(str));
 
-	printf("Enter a (accel) or g (gyro) + ENTER");
+	printf("Enter a (accel) or g (gyro) + ENTER\n");
 
 	while(character!= '\n')
 	  {
